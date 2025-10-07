@@ -1,0 +1,498 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Música de Rihanna - Un Mundo Creativo</title>
+    <style>
+        /* Estilos generales */
+        :root {
+            --primary-color: #a0c4ff; /* Celeste pastel */
+            --secondary-color: #c3d7ff; /* Celeste pastel más claro */
+            --bg-dark: #1a1a1a;
+            --text-light: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-light);
+            line-height: 1.6;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-dark);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+        }
+
+        nav ul {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            list-style: none;
+            justify-content: center;
+        }
+
+        nav ul li a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        /* Hero Section */
+        #hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Centrar verticalmente */
+            text-align: center;
+            padding: 3rem 1rem;
+            background: rgba(0, 0, 0, 0.6);
+            min-height: 300px; /* Altura mínima para mantener proporción */
+        }
+
+        #hero p {
+            max-width: 600px;
+            font-size: 1.3rem; /* Aumentar tamaño de fuente */
+            font-weight: 500;
+            border: 2px solid var(--primary-color); /* Borde decorativo */
+            padding: 1rem;
+            border-radius: 8px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Albums Section */
+        #albums {
+            padding: 3rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        #albums h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        #albums ul {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        #albums ul li {
+            background: #b3d4fc; /* Celeste pastel sólido */
+            padding: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        #albums ul li:hover {
+            transform: translateY(-5px);
+            background: #9ec2f7; /* Celeste pastel más oscuro para hover */
+        }
+
+        .details {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            animation: slideIn 0.5s ease;
+        }
+
+        .details img {
+            max-width: 150px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        /* Hits Section */
+        #hits {
+            padding: 3rem 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #hits ul {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        #hits ul li {
+            background: #b3d4fc; /* Celeste pastel sólido */
+            padding: 1rem;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        #hits ul li:hover {
+            background: #9ec2f7; /* Celeste pastel más oscuro para hover */
+        }
+
+        /* Form Section */
+        #form {
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        #form form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #form input[type="text"] {
+            padding: 0.75rem;
+            width: 100%;
+            max-width: 400px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        #form button {
+            padding: 0.75rem 2rem;
+            background: var(--primary-color);
+            border: none;
+            color: var(--text-light);
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        #form button:hover {
+            background: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        #shared-songs {
+            margin-top: 2rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #shared-songs h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        #shared-songs ul {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            list-style: none;
+        }
+
+        #shared-songs ul li {
+            background: #b3d4fc; /* Celeste pastel sólido */
+            padding: 1rem;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+            animation: slideIn 0.5s ease;
+        }
+
+        #shared-songs ul li:hover {
+            background: #9ec2f7; /* Celeste pastel más oscuro para hover */
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-dark);
+            text-align: center;
+            padding: 1rem;
+            position: relative;
+            width: 100%;
+        }
+
+        /* Media Queries para diseño responsivo */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            #hero p {
+                font-size: 1.1rem;
+                padding: 0 1rem;
+            }
+
+            #albums ul {
+                grid-template-columns: 1fr;
+            }
+
+            #form input[type="text"] {
+                max-width: 300px;
+            }
+
+            #shared-songs {
+                max-width: 300px;
+            }
+        }
+
+        @media (min-width: 600px) and (max-width: 900px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            #hero p {
+                font-size: 1.2rem;
+            }
+
+            #albums ul {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            #albums ul {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Música de Rihanna</h1>
+        <nav>
+            <ul>
+                <li><a href="#hero">Inicio</a></li>
+                <li><a href="#albums">Álbumes</a></li>
+                <li><a href="#hits">Hits</a></li>
+                <li><a href="#form">Comparte</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="hero">
+        <p>Rihanna, la reina del pop y R&B, ha revolucionado la música con su creatividad audaz, fusionando géneros y estilos únicos. Explora su discografía y hits icónicos.</p>
+    </section>
+
+    <section id="albums">
+        <h2>Álbumes de Estudio</h2>
+        <ul>
+            <li onclick="toggleDetails('album1')">Music of the Sun (2005)
+                <div id="album1" class="details">
+                    <img src="path/to/music_of_the_sun.jpg" alt="Portada de Music of the Sun" style="width:200px; border-radius:8px;">
+                    <p>Su debut con influencias caribeñas y R&B.</p>
+                </div>
+            </li>
+            <li onclick="toggleDetails('album2')">A Girl Like Me (2006)
+                <div id="album2" class="details">
+                    <img src="path/to/a_girl_like_me.jpg" alt="Portada de A Girl Like Me" style="width:200px; border-radius:8px;">
+                    <p>Explorando pop y dancehall.</p>
+                </div>
+            </li>
+            <li onclick="toggleDetails('album3')">Good Girl Gone Bad (2007)
+                <div id="album3" class="details">
+                    <img src="path/to/good_girl_gone_bad.jpg" alt="Portada de Good Girl Gone Bad" style="width:200px; border-radius:8px;">
+                    <p>Transformación hacia un sonido más edgy.</p>
+                </div>
+            </li>
+            <li onclick="toggleDetails('album4')">Rated R (2009)
+                <div id="album4" class="details">
+                    <img src="path/to/rated_r.jpg" alt="Portada de Rated R" style="width:200px; border-radius:8px;">
+                    <p>Álbum oscuro y personal.</p>
+                </div>
+            </li>
+            <li onclick="toggleDetails('album5')">Loud (2010)
+                <div id="album5" class="details">
+                    <img src="path/to/loud.jpg" alt="Portada de Loud" style="width:200px; border-radius:8px;">
+                    <p>Hits pop vibrantes.</p>
+                </div>
+            </li>
+            <li onclick="toggleDetails('album6')">Talk That Talk (2011)
+                <div id="album6" class="details">
+                    <img src="path/to/talk_that_talk.jpg" alt="Portada de Talk That Talk" style="width:200px; border-radius:8px;">
+                    <p>Mezcla de R&B y electrónica.</p>
+                </div>
+            </li>
+            <li onclick="toggleDetails('album7')">Unapologetic (2012)
+                <div id="album7" class="details">
+                    <img src="path/to/unapologetic.jpg" alt="Portada de Unapologetic" style="width:200px; border-radius:8px;">
+                    <p>Exploración de temas controvertidos.</p>
+                </div>
+            </li>
+            <li onclick="toggleDetails('album8')">Anti (2016)
+                <div id="album8" class="details">
+                    <img src="https://media.vanityfair.com/photos/561d1afb319af15240f9b03b/master/w_2560%2Cc_limit/rihanna-cover-art-roy-nachum.jpg" alt="Portada de Anti" style="width:200px; border-radius:8px;">
+                    <p>Tracklist:</p>
+                    <ol>
+                        <li>Consideration (featuring SZA) - 2:41</li>
+                        <li>James Joint - 1:12</li>
+                        <li>Kiss It Better - 4:13</li>
+                        <li>Work (featuring Drake) - 3:39</li>
+                        <li>Desperado - 3:06</li>
+                        <li>Woo - 3:55</li>
+                        <li>Needed Me - 3:11</li>
+                        <li>Yeah, I Said It - 2:13</li>
+                        <li>Same Ol' Mistakes - 6:37</li>
+                        <li>Never Ending - 3:22</li>
+                        <li>Love on the Brain - 3:44</li>
+                        <li>Higher - 2:00</li>
+                        <li>Close to You - 3:43</li>
+                    </ol>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <section id="hits">
+        <h2>Hits Número Uno en Billboard Hot 100</h2>
+        <ul>
+            <li>SOS (2006)</li>
+            <li>Umbrella (featuring Jay-Z) (2007)</li>
+            <li>Take a Bow (2008)</li>
+            <li>Disturbia (2008)</li>
+            <li>Live Your Life (T.I. featuring Rihanna) (2008)</li>
+            <li>Rude Boy (2010)</li>
+            <li>Only Girl (In the World) (2010)</li>
+            <li>What's My Name? (featuring Drake) (2010)</li>
+            <li>Love the Way You Lie (Eminem featuring Rihanna) (2010)</li>
+            <li>S&M (2011)</li>
+            <li>We Found Love (featuring Calvin Harris) (2011)</li>
+            <li>Diamonds (2012)</li>
+            <li>The Monster (Eminem featuring Rihanna) (2013)</li>
+            <li>Work (featuring Drake) (2016)</li>
+        </ul>
+    </section>
+
+    <section id="form">
+        <h2>Comparte Tu Canción Favorita</h2>
+        <form onsubmit="validateForm(event)">
+            <input type="text" id="song" placeholder="Escribe tu canción favorita de Rihanna">
+            <button type="submit">Enviar</button>
+        </form>
+        <div id="shared-songs">
+            <h3>Canciones Compartidas</h3>
+            <ul></ul>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 - Página sobre la música de Rihanna. Creada con creatividad.</p>
+    </footer>
+
+    <script>
+        // Función para alternar detalles de álbumes
+        function toggleDetails(id) {
+            var elem = document.getElementById(id);
+            if (elem.style.display === "none" || elem.style.display === "") {
+                elem.style.display = "block";
+            } else {
+                elem.style.display = "none";
+            }
+        }
+
+        // Validación del formulario y agregar canción a la lista
+        function validateForm(event) {
+            event.preventDefault();
+            var song = document.getElementById('song').value;
+            if (song.trim() === "") {
+                alert("Por favor, ingresa una canción válida.");
+                return;
+            }
+
+            // Mostrar mensaje de confirmación
+            alert("¡Gracias por compartir! Tu canción favorita es: " + song);
+
+            // Agregar la canción a la lista de canciones compartidas
+            var sharedSongsList = document.querySelector('#shared-songs ul');
+            var li = document.createElement('li');
+            li.textContent = song;
+            sharedSongsList.appendChild(li);
+
+            // Limpiar el input
+            document.getElementById('song').value = "";
+        }
+    </script>
+</body>
+</html>
